@@ -1,0 +1,6 @@
+astunparse==1.6.3
+mdtraj==1.9.7
+numpy==1.22.2
+pyparsing==3.0.7
+scipy==1.8.0
+six==1.16.0
