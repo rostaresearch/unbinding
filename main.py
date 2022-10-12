@@ -36,11 +36,11 @@ if __name__ == '__main__':
             Unb.maxdist = args.maxdist / 10
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
-        c = rp.Cycle(Unb.cycle)
+        c = rp.Cycle(Unb)
         c.readDCD(Unb.top)
         if args.writeDCD:
             c.saveNewDCD(int(args.stride))
-        c.getNeighbour(args.lig, args.cutoff)
+        c.getNeighbour(args.lig, args.cutoff, Unb.clusters)
         c.getClusters(Unb.clusters)
     elif args.step == "step2":
         data = cg.readData("mean_analysis.dat")
