@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--step')
     parser.add_argument('-s', "--stride", default=5, type=int)
     parser.add_argument('-l', "--lig", default="LIG")
+    parser.add_argument("--top", default="find")
     parser.add_argument('-c', "--cutoff", default=3.5, type=float, help="Initial cutoff for identifying neighbours in A")
     parser.add_argument('-m', "--maxdist", default=9, type=float, help="distance for exclusion fo pairs in A")
     parser.add_argument('-t', "--trajectory")
@@ -34,6 +35,7 @@ if __name__ == '__main__':
             Unb.ligresname = args.lig
             Unb.traj_length = args.ns
             Unb.maxdist = args.maxdist / 10
+            Unb.set_top(args.top)
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
         c = rp.Cycle(Unb)
@@ -86,6 +88,7 @@ if __name__ == '__main__':
                 Unb.ligresname = args.lig
                 Unb.traj_length = args.ns
                 Unb.maxdist = args.maxdist / 10
+                Unb.set_top(args.top)
             if args.trajectory is not None:
                 Unb.cycle = int(args.trajectory) + 1
             c = rp.Cycle(Unb)

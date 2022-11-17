@@ -14,20 +14,6 @@ class Unbinding:
         self.wrkdir = os.getcwd()
         self.checkpoint = os.path.join(self.wrkdir, ".checkpoint")
         self.output = os.path.join(self.wrkdir, "unbinding.out")
-        # print header
-        prmtop = os.path.join(self.wrkdir, "toppar", "complex.prmtop")
-        psf = os.path.join(self.wrkdir, "toppar", "complex.psf")
-        pdb = os.path.join(self.wrkdir, "toppar", "complex.pdb")
-        if os.path.isfile(prmtop):
-            self.top = prmtop
-        elif os.path.isfile(psf):
-            self.top = psf
-        elif not os.path.isfile(pdb):
-            self.top = pdb
-        else:
-            self.writeOutput("No topology file is found in {:s}".format(os.path.join(self.wrkdir, "toppar")))
-            self.writeOutput("Topology can be: complex.prmtop, complex.psf, complex.pdb")
-            sys.exit(0)
         self.cycle = 1
         self.clusters = None
         self.traj_lenght = 10
@@ -36,6 +22,29 @@ class Unbinding:
         self.meanfluct = 1      # discarding distance with larger mean fluctuation (in nm)
         self.N_pairs = 0
         self.ligresname = ""
+
+    def set_top(self, arg):
+        if arg == "find":
+            prmtop = os.path.join(self.wrkdir, "toppar", "complex.prmtop")
+            psf = os.path.join(self.wrkdir, "toppar", "complex.psf")
+            pdb = os.path.join(self.wrkdir, "toppar", "complex.pdb")
+            if os.path.isfile(prmtop):
+                self.top = prmtop
+            elif os.path.isfile(psf):
+                self.top = psf
+            elif os.path.isfile(pdb):
+                self.top = pdb
+            else:
+                self.writeOutput("No topology file is found in {:s}".format(os.path.join(self.wrkdir, "toppar")))
+                sys.exit(0)
+        else:
+            if os.path.isfile(arg):
+                self.top = arg
+            else:
+                self.writeOutput("No topology file is found {:s}".format(arg))
+                sys.exit(0)
+        return
+
 
     def history(self, cycle):
         if self.cycle == 1:
