@@ -22,6 +22,8 @@ class Unbinding:
         self.meanfluct = 1      # discarding distance with larger mean fluctuation (in nm)
         self.N_pairs = 0
         self.ligresname = ""
+        self.top = None
+        self.template = None
 
     def set_top(self, arg):
         if arg == "find":
@@ -45,6 +47,31 @@ class Unbinding:
                 sys.exit(0)
         return
 
+    def set_namd_template(self, path="template.inp"):
+        template = ""
+        ignore = ["outputName", "binCoordinates", "binVelocities", "extendedSystem", "dcdfreq",
+                  "colvars", "colvarsConfig", "run"]
+        with open(path, "r") as f:
+            for line in f:
+                if len(line.strip()) == 0:
+                    template += line
+                elif line.lstrip()[0] == '#':
+                    template += line
+                elif line.lstrip().split()[0] in ignore:
+                    continue
+                else:
+                    template += line
+        template += "### controlled by the unbinding algorithm ###\n"
+        template += "outputName         traj_{0:d};\n"
+        template += "binCoordinates     ../traj_{1:d}/traj_{1:d}.restart.coor;\n"
+        template += "binVelocities      ../traj_{1:d}/traj_{1:d}.restart.vel;\n"
+        template += "extendedSystem     ../traj_{1:d}/traj_{1:d}.restart.xsc;\n"
+        template += "dcdfreq            1000;\n"
+        template += "colvars on\n"
+        template += "colvarsConfig sum_{0:d}.col\n"
+        template += "run                {2:d};\n"
+        self.template = template
+        return
 
     def history(self, cycle):
         if self.cycle == 1:
@@ -111,7 +138,7 @@ class Unbinding:
         except IOError:
             self.writeOutput("No cluster file is found in {:s}".format(os.path.join(self.wrkdir, "toppar", "LIG_clusters.dat")))
             open(os.path.join(self.wrkdir, "toppar", "LIG_clusters.dat"), 'a').close()
-            self.writeOutput("Empty ligand cluster file is created. Check to manual to ddefine clusters.")
+            self.writeOutput("Empty ligand cluster file is created. Check to manual to define clusters.")
             self.clusters = readLigandClusters(os.path.join(self.wrkdir, "toppar", "LIG_clusters.dat"))
         return
 

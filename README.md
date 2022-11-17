@@ -24,14 +24,42 @@ pbctools package needed (works with 2.6 version)
 
 ### Walk-through
 
-##### A. Initial unbias MD simulation
+##### A. Initial unbiased MD simulation
 1. Generate the structure from pdb, homology model, etc  
-
 2. Set up your system with your favorite method (for example charmm-gui or amber)
-
 3. Run *x* ns (for example 20 ns, 10000000 steps) of free MD simulations  
 In this project we are using NAMD for the MD simulations  
-Folder name (for future reference): traj_0  
+Folder name (for future reference): traj_0, copy the trajectory
+there as traj_0.dcd. Similarly, copy rename the `coor`, `vel` and `xsc` files.
+4. Copy the namd input of the unbiased run to the working directory and name it `template.inp`.
+The following keywords are going to be overwritten: `outputName`, `binCoordinates`, `binVelocities`,
+`extendedSystem`, `dcdfreq`, `colvars`, `colvarsConfig`, `run`.
+Make sure that the rest of references are appropriate, running from the `traj_$i`
+directories.
+5. Also copy the `toppar` folder to the working directory.
+6. If the ligand has some symmetry, you may cluster atoms to be treated as one
+functional group to avoid artefacts. Write space-separated atom names in one line
+to define a cluster in `toppar/LIG_clusters.dat`.
+
+The working directory should look similar:
+```
+├── template.inp
+├── toppar
+│   ├── cam.str
+│   ├── complex.psf
+│   ├── lig.prm
+│   ├── LIG_clusters.dat
+│   ├── par_all36_carb.prm
+.   .
+.   .
+.   .
+│   └── toppar_water_ions.str
+└── traj_0
+    ├── traj_0.dcd
+    ├── traj_0.restart.coor
+    ├── traj_0.restart.vel
+    └── traj_0.restart.xsc
+```
 
 ##### B. Distances Selection Process / Unbinding initial trajectory
 

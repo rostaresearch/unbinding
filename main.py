@@ -36,6 +36,7 @@ if __name__ == '__main__':
             Unb.traj_length = args.ns
             Unb.maxdist = args.maxdist / 10
             Unb.set_top(args.top)
+            Unb.set_namd_template()
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
         c = rp.Cycle(Unb)
@@ -89,6 +90,7 @@ if __name__ == '__main__':
                 Unb.traj_length = args.ns
                 Unb.maxdist = args.maxdist / 10
                 Unb.set_top(args.top)
+                Unb.set_namd_template()
             if args.trajectory is not None:
                 Unb.cycle = int(args.trajectory) + 1
             c = rp.Cycle(Unb)
@@ -100,7 +102,7 @@ if __name__ == '__main__':
             if args.writeDCD:
                 c.saveNewDCD(int(args.stride))
             c.getNeighbour(args.lig, args.cutoff, Unb.clusters)
-            # c.getClusters(Unb.clusters)
+            c.getClusters(Unb.clusters)
             Unb.history(c)
             c.createContact()
             out.trackDistances(Unb)

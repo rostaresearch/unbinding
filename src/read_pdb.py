@@ -39,6 +39,7 @@ class Cycle:
     def __init__(self, unbinding):
         self.number = unbinding.cycle
         self.wrkdir = unbinding.wrkdir
+        self.template = unbinding.template
         self.traj_length = unbinding.traj_length
         self.prevtraj = None
         self.pairs = []
@@ -199,84 +200,11 @@ class Cycle:
         self.writeNamdInput()
 
     def writeNamdInput(self):
-        input = """############
-# Force-Field Parameters
-amber              yes
-parmfile           ../toppar/complex.prmtop
-coordinates        ../toppar/complex.pdb
-
-set temp           298;
-outputName         traj_{0:d} # base name for output from this run
-
-set inputname      traj_{1:d}.restart;
-binCoordinates     ../traj_{1:d}/$inputname.coor;
-binVelocities      ../traj_{1:d}/$inputname.vel;
-extendedSystem     ../traj_{1:d}/$inputname.xsc;
-restartfreq        500;
-dcdfreq            1000;
-dcdUnitCell        yes;
-xstFreq            500;
-outputEnergies     125;
-outputTiming       500;
-
-# These are specified by AMBER
-exclude             scaled1-4
-1-4scaling          0.833333
-switching           on
-vdwForceSwitching   yes;
-
-# You have some freedom choosing the cutoff
-cutoff              12.0;
-switchdist          10.0;
-pairlistdist        16.0;
-stepspercycle       20;
-pairlistsPerCycle    2;
-
-# Integrator Parameters
-timestep            2.0;
-rigidBonds          all;
-nonbondedFreq       1;
-fullElectFrequency  1;
-
-wrapWater           on;
-wrapAll             on;
-wrapNearest        off;
-
-# PME (for full-system periodic electrostatics)
-source ../toppar/checkfft.str
-
-PME                yes;
-PMEInterpOrder       6;
-PMEGridSizeX     $fftx;
-PMEGridSizeY     $ffty;
-PMEGridSizeZ     $fftz;
-
-# Constant Pressure Control (variable volume)
-useGroupPressure       yes;
-useFlexibleCell         no;
-useConstantRatio        no;
-langevinPiston          on;
-langevinPistonTarget  1.01325;
-langevinPistonPeriod  50.0;
-langevinPistonDecay   25.0;
-langevinPistonTemp   $temp;
-
-# Constant Temperature Control
-langevin                on;
-langevinDamping        1.0;
-langevinTemp         $temp;
-langevinHydrogen       off;
-
-colvars on
-colvarsConfig sum_{0:d}.col
-
-# run
-run                {2:d};
-
-""".format(self.number, self.number - 1, int(self.traj_length * 5E5))
+        input = self.template.format(self.number, self.number - 1, int(self.traj_length * 5E5))
         with open(os.path.join(self.wrkdir, "traj_{:d}".format(self.number), "traj_{:d}.inp".format(self.number)), "w") as f:
             f.write(input)
         return
+
 
 def main():
     example = PDB()
@@ -284,4 +212,5 @@ def main():
     print("stop")
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
