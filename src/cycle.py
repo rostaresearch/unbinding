@@ -61,7 +61,7 @@ class Cycle:
         return
 
     def getClusters(self, ligandClusters):
-        """Obsolete as hes to be done earlier"""
+        """Obsolete as has to be done earlier"""
         for i in range(len(self.pairs)):
             self.pairs[i].getProteinClusterAtoms(self.prevtraj.top)
             self.pairs[i].getLigandClusterAtoms(self.prevtraj.top, ligandClusters)

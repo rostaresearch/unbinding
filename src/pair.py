@@ -70,9 +70,9 @@ class Pair:
         self.mean = None
         self.mask = None
         self.ligand_atom = {"index": line[0], "resid": line[1], "type": line[2], "resname": line[8]}
+        self.ligandClusterAtoms = [self.ligand_atom]
         self.atom = {"index": line[3], "resid": line[4], "type": line[5], "resname": line[7]}
-        self.proteinClusterAtoms = []
-        self.ligandClusterAtoms = []
+        self.proteinClusterAtoms = [self.atom]
         self.ID = -1
         return
 
@@ -128,11 +128,14 @@ class Pair:
                 if self.atom["type"] in frag:
                     for i in top.select("residue "+str(self.atom["resid"])+" and resname "+str(self.atom["resname"])):
                         if top._atoms[i].name in frag:
-                            self.proteinClusterAtoms.append(
-                                {"index": i,
-                                "resid": self.atom["resid"],
-                                "type": top._atoms[i].name,
-                                "resname": self.atom["resname"]})
+                            if not self.hasAtom(i):
+                                self.proteinClusterAtoms.append(
+                                    {"index": i,
+                                    "resid": self.atom["resid"],
+                                    "type": top._atoms[i].name,
+                                    "resname": self.atom["resname"]})
+                            else:
+                                pass
         return
 
     def getLigandClusterAtoms(self, PDB, ligFragments):
@@ -161,11 +164,12 @@ class Pair:
                           .format(self.ligand_atom, frag))
                 for i in selection:
                     if top._atoms[i].name in frag:
-                        self.ligandClusterAtoms.append(
-                            {"index": i,
-                             "resid": self.ligand_atom["resid"],
-                             "type": top._atoms[i].name,
-                             "resname": self.ligand_atom["resname"]})
+                        if not self.hasAtom(i):
+                            self.ligandClusterAtoms.append(
+                                {"index": i,
+                                 "resid": self.ligand_atom["resid"],
+                                 "type": top._atoms[i].name,
+                                 "resname": self.ligand_atom["resname"]})
         return
 
     def getPrintable(self):
@@ -206,13 +210,13 @@ def createPairs(data):
     groups = []
     for i in range(len(data)):
         for j in range(len(data[i])):
-            try:
+            if (data[i][j][0], data[i][j][3]) in groupID:
                 gi = groupID.index((data[i][j][0], data[i][j][3]))
                 groups[gi].sum += data[i][j][6]
                 groups[gi].value.append(data[i][j][6])
                 groups[gi].count += 1
                 groups[gi].mask.append(i)
-            except ValueError:
+            else:
                 groupID.append((data[i][j][0], data[i][j][3]))
                 groups.append(Pair(data[i][j]))
                 groups[-1].mask = [i]
