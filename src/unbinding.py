@@ -177,7 +177,10 @@ class Unbinding:
         self.traj_length = int(args.ns)
         self.maxdist = args.maxdist / 10
         self.writeOutput(out.header())
+        self.set_top(args.top)
+        self.set_namd_template()
 
+        self.writeOutput("# Cumulative reprocessing #")
         for i in range(int(args.trajectory) + 1):
             if i != 0:
                 self.newCycle()
