@@ -178,6 +178,7 @@ class Unbinding:
         self.readClusters()
         self.ligresname = args.lig
         self.traj_length = int(args.ns)
+        self.cutoff = args.cutoff
         self.maxdist = args.maxdist / 10
         self.writeOutput(out.header())
         self.set_top(args.top)
@@ -216,7 +217,7 @@ class Unbinding:
         print("{0:28s}{1:52d}".format("Current iteration", self.cycle))
         print("{0:28s}{1:52d}".format("Identified contacts", self.N_pairs))
         print("####{0:^20s}####".format("UNBINDING"))
-        print("{0:28s}{1:52f.2}".format("Distance inclusion cutoff", self.cutoff))
+        print("{0:28s}{1:52.2f}".format("Distance inclusion cutoff", self.cutoff))
         print("{0:28s}{1:52.2f}".format("Distance exclusion cutoff", self.maxdist))
         print("{0:28s}{1:52.2f}".format("Distance fluctuation cutogg", self.meanfluct))
         print("{0:28s}{1:52d}".format("Trajectory length / ns", self.traj_length))
