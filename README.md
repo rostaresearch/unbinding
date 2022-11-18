@@ -70,19 +70,23 @@ to be included or excluded in the CVs.
     ``` 
 Options:
 
-| Flag             | Argument  |           Default |
-|------------------|:----------|------------------:|
-| --trajectory  -t | int       | "last trajectory" |
-| --lig         -l | string    |               LIG |
-| --top            | string    |            "find" |
-| --cutoff      -c | float(Å)  |               3.5 |
-| --maxdist     -m | float(Å)  |               9.0 |
-| -ns              | int(ns)   |                10 |
-| --cumulative     | Boolean   |             False |
-| --writeDCD       | Boolean   |             False |
-| --stride      -s | int       |                 5 |
-| --processonly -p | Boolean   |             False |
-| --nosave         | Boolean   |             False |
+| Flag             | Argument |           Default |
+|------------------|:---------|------------------:|
+| --trajectory  -t | int      | "last trajectory" |
+| --lig         -l | string   |               LIG |
+| --top            | string   |            "find" |
+| --cutoff      -c | float(Å) |               3.5 |
+| --maxdist     -m | float(Å) |               9.0 |
+| -ns              | int(ns)  |                10 |
+| --cumulative     | Boolean  |             False |
+| --writeDCD       | Boolean  |             False |
+| --stride      -s | int      |                 5 |
+| --processonly -p | Boolean  |             False |
+| --nosave         | Boolean  |             False |
+| --report         | Boolean  |             False |
+| --auto           | Boolean  |             False |
+| --maxiter        | int      |                25 |
+| --namd           | string   |              None |
 
 `--trajectory`
 Which trajectory to analyze. Finds the latest `traj_$i` folder unless specified.
@@ -119,6 +123,18 @@ Do not write VMD and NAMD input. Other outputs will be written.
 
 `--nosave` (default=False)
 Do not save the checkpoint. For debug only.
+
+`--report` (default=False)
+Prints the configuration saved in the checkpoint file and exits.
+
+`--auto` (default=False)
+The program goes to the background and waits for namd to finish. Then it 
+processes the results and submits the next iteration, until the `--maxiter`
+(default=25) is reached.
+
+`--namd` (default=None)
+Path to the namd submission script, must be given with `--auto`. The script has to be an executable,
+taking `traj_$i.inp` as an argument, producing `traj_$i.out` as an output.
 
 ### Output generated:
 Main folder
