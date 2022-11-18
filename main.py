@@ -22,8 +22,17 @@ if __name__ == '__main__':
                         help='Do not write VMD and NAMD input. Other outputs will be written.')
     parser.add_argument("--nosave", action='store_true', default=False,
                         help='Do not save the checkpoint. For debug only.')
+    parser.add_argument("--report", action='store_true', default=False,
+                        help='Report status and exit.')
     args = parser.parse_args()
     Unb = unb.Unbinding()
+    if args.report:
+        if os.path.isfile(Unb.checkpoint):
+            Unb = Unb.load()
+            Unb.report()
+        else:
+            print("The is no checkpoint file to report of.")
+        sys.exit(0)
     if args.cumulative:
         if args.trajectory is None:
             print("With --cumulative option, please specify the last trajectory to be processed with option -t.")
@@ -40,6 +49,7 @@ if __name__ == '__main__':
             Unb.maxdist = args.maxdist / 10
             Unb.set_top(args.top)
             Unb.set_namd_template()
+            Unb.cutoff = args.cutoff
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
         c = src.cycle.Cycle(Unb)
@@ -50,7 +60,7 @@ if __name__ == '__main__':
             sys.exit(0)
         if args.writeDCD:
             c.saveNewDCD(int(args.stride))
-        c.getNeighbour(args.lig, args.cutoff, Unb.clusters)
+        c.getNeighbour(Unb.ligresname, Unb.cutoff, Unb.clusters)
         c.getClusters(Unb.clusters)
         Unb.history(c)
         c.createContact()

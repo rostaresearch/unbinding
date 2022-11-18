@@ -17,14 +17,17 @@ class Unbinding:
         self.output = os.path.join(self.wrkdir, "unbinding.out")
         self.cycle = 1
         self.clusters = None
-        self.traj_lenght = 10
+        self.traj_length = 10
         self.pairs = []
-        self.maxdist = None     # discarding distance larger then this (in nm)
+        self.maxdist = None     # discarding distance larger than this (in nm)
         self.meanfluct = 1      # discarding distance with larger mean fluctuation (in nm)
         self.N_pairs = 0
         self.ligresname = ""
         self.top = None
         self.template = None
+        self.cutoff = None
+        self.changes = None
+        return
 
     def set_top(self, arg):
         if arg == "find":
@@ -206,6 +209,29 @@ class Unbinding:
             self.writeOutput(out.cycle(c))
         if not args.nosave:
             self.save()
+        return
+
+    def report(self):
+        print("####{0:^20s}####".format("PROGRESS"))
+        print("{0:28s}{1:52d}".format("Current iteration", self.cycle))
+        print("{0:28s}{1:52d}".format("Identified contacts", self.N_pairs))
+        print("####{0:^20s}####".format("UNBINDING"))
+        print("{0:28s}{1:52f.2}".format("Distance inclusion cutoff", self.cutoff))
+        print("{0:28s}{1:52.2f}".format("Distance exclusion cutoff", self.maxdist))
+        print("{0:28s}{1:52.2f}".format("Distance fluctuation cutogg", self.meanfluct))
+        print("{0:28s}{1:52d}".format("Trajectory length / ns", self.traj_length))
+        print("####{0:^20s}####".format("LIGAND"))
+        print("{0:28s}{1:>52s}".format("Ligand residue name", self.ligresname))
+        print("{0:28s}".format("Ligand clusters"))
+        print(self.clusters)
+        print("####{0:^20s}####".format("FILE CONFIG"))
+        print("{0:28s}{1:>52s}".format("Working directory", self.wrkdir))
+        print("{0:28s}{1:>52s}".format("Checkpoint file", self.checkpoint))
+        print("{0:28s}{1:>52s}".format("Topology file", self.top))
+        print("{0:28s}{1:>52s}".format("Output file", self.output))
+        print("####{0:^20s}####".format("MD CONFIG"))
+        print("{0:28s}".format("NAMD input template"))
+        print(self.template)
         return
 
 
