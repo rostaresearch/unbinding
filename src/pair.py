@@ -74,6 +74,15 @@ class Pair:
         self.proteinClusterAtoms = []
         self.ligandClusterAtoms = []
         self.ID = -1
+        return
+
+    def __str__(self):
+        return "{0:s}{1:d}{2:s}-{3:s}{4:d}{5:s}".format(self.atom["resname"],
+                                                        self.atom["resid"],
+                                                        self.atom["type"],
+                                                        self.ligand_atom["resname"],
+                                                        self.ligand_atom["resid"],
+                                                        self.ligand_atom["type"])
 
     def calculateMean(self):
         self.sum = np.sum(self.value)
