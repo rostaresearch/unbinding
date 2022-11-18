@@ -24,6 +24,11 @@ if __name__ == '__main__':
                         help='Do not save the checkpoint. For debug only.')
     parser.add_argument("--report", action='store_true', default=False,
                         help='Report status and exit.')
+    parser.add_argument("--auto", action='store_true', default=False,
+                        help='Go to the background and restart after namd finished.')
+    parser.add_argument("--namd", help="NAMD submission script, taking <name>.inp as an input and writing to"
+                                       " <name>.out. Use with --auto.")
+    parser.add_argument('--maxiter', default=25, type=int, help="Maximum number of iterations. Use with --auto.")
     args = parser.parse_args()
     Unb = unb.Unbinding()
     if args.report:
@@ -33,7 +38,7 @@ if __name__ == '__main__':
         else:
             print("The is no checkpoint file to report of.")
         sys.exit(0)
-    if args.cumulative:
+    elif args.cumulative:
         if args.trajectory is None:
             print("With --cumulative option, please specify the last trajectory to be processed with option -t.")
             sys.exit(0)
@@ -50,6 +55,14 @@ if __name__ == '__main__':
             Unb.set_top(args.top)
             Unb.set_namd_template()
             Unb.cutoff = args.cutoff
+        if args.auto:
+            if args.namd is None:
+                print("With --auto option, please specify a script which submits namd as <script> namd.inp,"
+                      " producing namd.out as an output.")
+                sys.exit(0)
+            if os.fork():
+                sys.exit(0)
+            Unb.auto(args)
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
         c = src.cycle.Cycle(Unb)

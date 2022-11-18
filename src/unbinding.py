@@ -1,6 +1,8 @@
 import os
 import sys
 import pickle
+from subprocess import Popen
+from time import sleep, asctime, time
 
 import src.cycle
 from read_ligand import readLigandClusters
@@ -235,6 +237,55 @@ class Unbinding:
         print(self.template)
         return
 
+    def update(self, **kwargs):
+        return
+
+    def auto(self, args):
+        self.writeOutput("# Automated run #")
+        self.writeOutput("PID: " + str(os.getpid()))
+        command = os.path.abspath(args.namd)
+        while self.cycle <= args.maxiter:
+            c = src.cycle.Cycle(self)
+            try:
+                c.readDCD(self.top)
+            except rp.DCDnotReadable:
+                self.writeOutput("DCD file cannot be read for cycle {:d}".format(c.number))
+                sys.exit(0)
+            if args.writeDCD:
+                c.saveNewDCD(int(args.stride))
+            c.getNeighbour(args.lig, args.cutoff, self.clusters)
+            c.getClusters(self.clusters)
+            self.history(c)
+            c.createContact()
+            out.trackDistances(self)
+            out.vmdRep(self)
+            c.setupCycle()
+            c.contact.writeNAMDcolvar(
+                os.path.join(c.wrkdir, "traj_{:d}".format(c.number), "sum_{:d}.col".format(c.number)),
+                traj_length=int(self.traj_length))
+            self.writeOutput(out.cycle(c))
+            self.save()
+            self.writeOutput("{0:s} is saved at {1:s}".format(self.checkpoint, asctime()))
+            os.chdir("traj_{:d}".format(c.number))
+            Popen([command, "traj_{:d}.inp".format(c.number)])
+            while True:
+                if not os.path.isfile("traj_{:d}.out".format(c.number)):
+                    sleep(10)
+                    continue
+                with open("traj_{:d}.out".format(c.number), "rb") as output:
+                    if "End of program" in tail(output):
+                        self.writeOutput("traj_{0:d}.out finished normally at {1:s}".format(c.number, asctime()))
+                        break
+                if time() - os.path.getmtime("traj_{:d}.out".format(c.number)) > 1800:
+                    self.writeOutput(
+                        "traj_{:d}.out has not been modified in 30 minutes, exiting".format(c.number))
+                    sys.exit(0)
+                sleep(10)
+            os.chdir(self.wrkdir)
+            self.newCycle()
+        self.writeOutput("Maximum number of iterations {0:d} is reached at {1:s}".format(args.maxiter, asctime()))
+        sys.exit(0)
+
 
 def rolling_mean(x, N):
     newx = np.empty(len(x))
@@ -244,3 +295,16 @@ def rolling_mean(x, N):
         else:
             newx[i] = np.mean(x[i - N:i + N + 1])
     return newx
+
+
+def tail(f, block_size=256):
+    f.seek(0, 2)
+    size = f.tell()
+    if size < block_size:
+        block_size = size
+    f.seek(-block_size, 2)
+    a = f.readlines()
+    rv = ""
+    for b in a:
+        rv += str(b)
+    return rv
