@@ -11,7 +11,7 @@ list of cases by the developers, it has not been thoroughly
 tested. Feel free to report problems and unexpected behaviour
 in the issues.*
 
-### Dependencies
+## Dependencies
 
 ##### Python
 Check `requirements.txt` 
@@ -22,9 +22,9 @@ pbctools package needed (works with 2.6 version)
 
 ---
 
-### Walk-through
+## Walk-through
 
-##### A. Initial unbiased MD simulation
+### A. Initial unbiased MD simulation
 1. Generate the structure from pdb, homology model, etc  
 2. Set up your system with your favorite method (for example charmm-gui or amber)
 3. Run *x* ns (for example 20 ns, 10000000 steps) of free MD simulations  
@@ -61,10 +61,9 @@ The working directory should look similar:
     └── traj_0.restart.xsc
 ```
 
-##### B. Distances Selection Process / Unbinding initial trajectory
+### B. Unbinding Iteration
 
-4. Unbinding simulation iteratively
-The script analyses the trajectory obtained from the previous step and calculate distances
+7. The script analyses the trajectory obtained from the previous step and calculate distances
 to be included or excluded in the CVs.
     ```bash
     python main.py
@@ -73,75 +72,75 @@ Options:
 
 | Flag             | Argument  |           Default |
 |------------------|:----------|------------------:|
-| --step           | enumerate |                   |
-| --stride      -s | int       |                 5 |
+| --trajectory  -t | int       | "last trajectory" |
 | --lig         -l | string    |               LIG |
+| --top            | string    |            "find" |
 | --cutoff      -c | float(Å)  |               3.5 |
 | --maxdist     -m | float(Å)  |               9.0 |
-| --trajectory  -t | int       | "last trajectory" |
-| --cumulative     |           |                   |
 | -ns              | int(ns)   |                10 |
+| --cumulative     | Boolean   |             False |
 | --writeDCD       | Boolean   |             False |
+| --stride      -s | int       |                 5 |
 | --processonly -p | Boolean   |             False |
 | --nosave         | Boolean   |             False |
 
-### step
-Define the subprocess of the unbinding step, only for debugging. 
+`--trajectory`
+Which trajectory to analyze. Finds the latest `traj_$i` folder unless specified.
 
-### stride (default=5)
-Define how many frame to skip when analysing the DCD trajectory
+`--lig` (default=LIG)
+Define the ligand resname, correspond in the resname present in the psf/prmtop/pdb file.
 
-### lig (default=LIG)
-Define the ligand resname, correspond in the resname present in the psf/prmtop/pdb file
+`--top` (default="find")
+Define the topology file. If not specified, the script checks if the following files exist:
+`toppar/complex.prmtop`, `toppar/complex.psf`, `toppar/complex.pdb`
 
-### cutoff (default=3.5)
+`--cutoff` (default=3.5)
 Initial cutoff for identifying neighbours in Å. The script analyses the last trajectory and
 if in more than 50% of the frames the distance appears, that distance will be included in
-the new set of CVs
+the new set of CVs.
 
-### maxdist (default=9.0)
+`--maxdist` (default=9.0)
 Cutoff for excluding contacts in Å.
 
-### trajectory
-Which trajectory to analyze
+`-ns` (default=10)
+Length of the biased simulations.
 
-### cumulative 
-Rerun for all the trajectories till the one defined in the *trajectory* argument
+`--cumulative` 
+Rerun for all the trajectories till the one defined in the `--trajectory` argument.
 
-### ns (default=10)
-Length of the next simulation 
+`--writeDCD`
+Write a new DCD strided.
 
-### writeDCD
-Write a new DCD strided
+`--stride` (default=5)
+Define how many frame to skip when analysing the DCD trajectory.
 
-### processonly  (default=False)
-Do not write VMD and NAMD input. Other outputs will be written
+`--processonly` (default=False)
+Do not write VMD and NAMD input. Other outputs will be written.
 
-### nosave  (default=False)
-Do not save the checkpoint. For debug only
+`--nosave` (default=False)
+Do not save the checkpoint. For debug only.
 
-
-## Output generated:
+### Output generated:
 Main folder
-- **unbinding.out**
+- `unbinding.out`
     Provides all the distances used as sum for the CVs used in the trajectories, and a summary
     of the distances excluded for the next trajectory
     
-- **distances_traked.csv**
+- `distances_traked.csv`
     Summary file tracking all the distances included and excluded
 
-- **.checkpoint**
+- `.checkpoint`
     Binary file with all the information stored
     
-New **traj_(last)** folder:
-- input file for NAMD simulation
-- **sum_(last).col** Colvar file for NAMD sumulation  
+New `traj_$i` folder:
+- `traj_$i.inp` input file for NAMD simulation
+- `sum_$i.col` Colvar file for NAMD sumulation  
  
-5. Run the simulation
+8. Run the simulation
   
-6. Repeat from 4-5 until the ligand is completely outside  
+9. Repeat from 7-8 until the ligand is completely onbound and the CV is empty.  
 
-##### C. String Setup
+## C. String Setup
 
 The option `-step string` attempts to create colvar files
 for a subsequent finite temperature string calculation.
