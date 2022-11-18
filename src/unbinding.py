@@ -1,12 +1,13 @@
 import os
 import sys
 import pickle
+
+import src.cycle
 from read_ligand import readLigandClusters
 import read_pdb as rp
 import output as out
 import numpy as np
 import mdtraj as md
-# import matplotlib.pyplot as plt
 
 
 class Unbinding:
@@ -180,7 +181,7 @@ class Unbinding:
         for i in range(int(args.trajectory) + 1):
             if i != 0:
                 self.newCycle()
-            c = rp.Cycle(self)
+            c = src.cycle.Cycle(self)
             try:
                 c.readDCD(self.top)
             except rp.DCDnotReadable:

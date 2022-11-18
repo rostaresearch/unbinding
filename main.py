@@ -1,5 +1,4 @@
-import src.scr3_python_colvar_generator as cg
-import src.CoM_colvars as colvar
+import src.cycle
 import src.unbinding as unb
 import src.read_pdb as rp
 import src.output as out
@@ -43,7 +42,7 @@ if __name__ == '__main__':
             Unb.set_namd_template()
         if args.trajectory is not None:
             Unb.cycle = int(args.trajectory) + 1
-        c = rp.Cycle(Unb)
+        c = src.cycle.Cycle(Unb)
         try:
             c.readDCD(Unb.top)
         except rp.DCDnotReadable:

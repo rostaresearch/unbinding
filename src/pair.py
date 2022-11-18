@@ -1,9 +1,6 @@
 import numpy as np
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import read_pdb as pdb
-from read_ligand import readLigandClusters
+from src import read_pdb as pdb
+from src.read_ligand import readLigandClusters
 
 
 ###################
@@ -270,4 +267,5 @@ def main():
     printSelection(data)
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
