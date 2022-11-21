@@ -30,7 +30,7 @@ class PDB:
             self.structure = md.load_dcd(dcd, top=pdb, atom_indices=indices)
             self.structure = self.structure.image_molecules(inplace=True)
         except:
-            raise PDBnotReadable
+            raise DCDnotReadable
 
 
 def main():
