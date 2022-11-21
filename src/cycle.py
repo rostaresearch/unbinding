@@ -109,7 +109,7 @@ class Cycle:
 
     def createContact(self, COM = True):
         self.contact = cv.Contact()
-        self.contact.pdb.structure = self.prevtraj[-1]
+        # self.contact.pdb.structure = self.prevtraj[-1]
         if COM:
             for pair in self.pairs:
                 if len(pair.ligandClusterAtoms) == 0:

@@ -32,6 +32,7 @@ if __name__ == '__main__':
     parser.add_argument("--namd", help="NAMD submission script, taking <name>.inp as an input and writing to"
                                        " <name>.out. Use with --auto.")
     parser.add_argument('--maxiter', default=25, type=int, help="Maximum number of iterations. Use with --auto.")
+    parser.add_argument("--string", action='store_true', default=False)
     args = parser.parse_args()
     Unb = unb.Unbinding()
     if args.report:
@@ -40,7 +41,16 @@ if __name__ == '__main__':
             Unb.report()
         else:
             print("The is no checkpoint file to report of.")
-        sys.exit(0)
+    elif args.string:
+        if os.path.isfile(Unb.checkpoint):
+            Unb = Unb.load()
+            c = src.cycle.Cycle(Unb)
+            c.getAllPairs(Unb)
+            c.createContact()
+            c.contact.prepareString(Unb)
+            pass
+        else:
+            print("The is no checkpoint file, please reprocess first to create a string.")
     elif args.cumulative:
         if args.trajectory is None:
             print("With --cumulative option, please specify the last trajectory to be processed with option -t.")

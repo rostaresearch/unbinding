@@ -152,11 +152,12 @@ class Unbinding:
         self.cycle += 1
         return
 
-    def refreshWorkdir(self, wd):
+    def updateWorkdir(self, wd):
         old = self.wrkdir
         self.wrkdir = wd
         self.top = self.top.replace(old, wd)
         self.output = self.output.replace(old, wd)
+        self.checkpoint = self.checkpoint.replace(old, wd)
         return
 
     def writeOutput(self, string):
