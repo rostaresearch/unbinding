@@ -1,10 +1,13 @@
+import argparse
+import os
+import sys
+
 import src.cycle
 import src.unbinding as unb
 import src.read_pdb as rp
 import src.output as out
-import argparse
-import os
-import sys
+from src.contact import UnboundException
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -80,10 +83,14 @@ if __name__ == '__main__':
         out.trackDistances(Unb)
         if not args.processonly:
             out.vmdRep(Unb)
-            c.setupCycle()
-            c.contact.writeNAMDcolvar(
-                os.path.join(c.wrkdir, "traj_{:d}".format(c.number), "sum_{:d}.col".format(c.number)),
-                traj_length=int(Unb.traj_length))
+            try:
+                c.setupCycle()
+                c.contact.writeNAMDcolvar(
+                    os.path.join(c.wrkdir, "traj_{:d}".format(c.number), "sum_{:d}.col".format(c.number)),
+                    traj_length=int(Unb.traj_length))
+            except UnboundException:
+                Unb.writeOutput("No contact remained in the colvar, ligand unbound!")
+                sys.exit(0)
         if Unb.cycle == 1:
             Unb.writeOutput(out.header())
         Unb.writeOutput(out.cycle(c))

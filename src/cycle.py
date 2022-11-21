@@ -165,6 +165,8 @@ class Cycle:
         return
 
     def setupCycle(self):
+        if len(self.contact.associations) == 0:
+            raise cv.UnboundException
         try:
             os.mkdir(os.path.join(self.wrkdir, "traj_{:d}".format(self.number)))
         except OSError:

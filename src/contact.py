@@ -4,6 +4,10 @@ import read_pdb as pdb
 import numpy as np
 
 
+class UnboundException(Exception):
+    pass
+
+
 class Cluster:
     def __init__(self):
         self.atoms = []
@@ -317,6 +321,8 @@ harmonic {{
 }}""".format(sum, sum + (np.sum(self.weight) * traj_length * step), int(traj_length * 5E5), force)
         with open(filename, 'w') as f:
             f.write(header)
+            if len(self.associations) == 0:
+                raise UnboundException
             for i in range(len(self.associations)):
                 lig = ""
                 pro = ""

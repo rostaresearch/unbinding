@@ -158,6 +158,7 @@ New `traj_$i` folder:
 
 ## C. String Setup
 
-The option `-step string` attempts to create colvar files
-for a subsequent finite temperature string calculation.
+[//]: # (The option `-step string` attempts to create colvar files)
+
+[//]: # (for a subsequent finite temperature string calculation.)
 *This function is experimental.*
