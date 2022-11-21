@@ -46,6 +46,12 @@ if __name__ == '__main__':
             Unb = Unb.load()
             c = src.cycle.Cycle(Unb)
             c.getAllPairs(Unb)
+            # loading this is unnecessary, should be simplified
+            try:
+                c.readDCD(Unb.top)
+            except rp.DCDnotReadable:
+                Unb.writeOutput("DCD file cannot be read for cycle {:d}".format(Unb.cycle))
+                sys.exit(0)
             c.createContact()
             c.contact.prepareString(Unb)
             pass

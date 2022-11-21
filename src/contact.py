@@ -158,45 +158,6 @@ class Contact:
             sum += self.weight[i]*(np.linalg.norm(self.ligandClusters[self.associations[i][0]].getCoM() - self.proteinClusters[self.associations[i][1]].getCoM()))
         return sum
 
-    def printDistances(self, filebase):
-        if len(self.indices) == 0:
-            self.getIndices()
-        self.getTraj()
-        for a in range(1, self.traj+1):
-            self.pdb.readDCD("trajectory_{0:d}/trajectory_{0:d}_wrap_{1:d}_noH2O.dcd".format(a, self.step), "trajectory_{0:d}/trajectory_{0:d}_noH2O.pdb".format(a), self.indices)
-#            self.pdb.readDCD("traj_{0:d}/traj_{0:d}.dcd".format(a), "toppar/complex.pdb", self.indices)
-            if len(self.ligandClusters[0].masses) == 0:
-                for c in self.ligandClusters:
-                    for j in c.atoms:
-                        i = self.new_indices[j]
-                        c.masses.append(self.pdb.structure.topology._atoms[i].element.mass)
-                    c.xyz = np.empty(shape=(len(c.masses), 3))
-                for c in self.proteinClusters:
-                    for j in c.atoms:
-                        i = self.new_indices[j]
-                        c.masses.append(self.pdb.structure.topology._atoms[i].element.mass)
-                    c.xyz = np.empty(shape=(len(c.masses), 3))
-            with open(filebase + "_{:d}_distances.dat".format(a), "w") as f:
-                for frame in range(self.pdb.structure.n_frames):
-                    for c in self.ligandClusters:
-                        k = 0
-                        for j in c.atoms:
-                            i = self.new_indices[j]
-                            c.xyz[k] = (self.pdb.structure._xyz[frame][i] * 10)
-                            k += 1
-                    for c in self.proteinClusters:
-                        k = 0
-                        for j in c.atoms:
-                            i = self.new_indices[j]
-                            c.xyz[k] = (self.pdb.structure._xyz[frame][i] * 10)
-                            k += 1
-
-                    for i in range(len(self.associations)):
-                        f.write("{0:.2f}  ".format(np.linalg.norm(self.ligandClusters[self.associations[i][0]].getCoM() - self.proteinClusters[self.associations[i][1]].getCoM())))
-                    f.write("\n")
-                print("nice")
-        return
-
     def prepareString(self, Unb):
         if len(self.indices) == 0:
             self.getIndices()
@@ -204,7 +165,7 @@ class Contact:
         if not os.path.exists(os.path.join(Unb.wrkdir, "distances")):
             os.makedirs(os.path.join(Unb.wrkdir, "distances"))
         for a in range(1, Unb.cycle + 1):
-            self.pdb.readDCD("traj_{0:d}/traj_{0:d}.dcd".format(a), Unb.top, indices=self.indices)
+            self.pdb.readDCD("traj_{0:d}/traj_{0:d}.dcd".format(a), Unb.top) #, indices=self.indices)
             if len(self.ligandClusters[0].masses) == 0:
                 for c in self.ligandClusters:
                     for j in c.atoms:
@@ -311,7 +272,6 @@ harmonic {{
 def main():
     c = Contact()
     c.readClusters("new-distances.dat")
-    c.printDistances("string")
     # c.writeNAMDcolvar("sum.col")
     print("Done")
 
