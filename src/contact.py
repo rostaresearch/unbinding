@@ -52,7 +52,6 @@ class Contact:
         self.traj = 0
         self.step = 0
         self.indices = []
-        self.new_indices = {}
 
     def getLigandCluster(self, index):
         for i in range(len(self.ligandClusters)):
@@ -70,7 +69,7 @@ class Contact:
         self.proteinClusters[-1].addAtom(index)
         return len(self.proteinClusters) - 1
 
-    def readClusters(self, filename, COM = True):
+    def readClusters(self, filename, COM=True):
         """
 
         :param filename: list of selected distances with distances displayed
@@ -128,18 +127,6 @@ class Contact:
         self.indices = np.sort(self.indices)
         return
 
-    def getTraj(self):
-        try:
-            with open("trajectory_number", 'r') as tf:
-                self.traj = int(tf.readline().strip())
-            with open("frame_step", 'r') as tf:
-                self.step = int(tf.readline().strip())
-        except:
-            pass
-        for j in range(len(self.indices)):
-            self.new_indices[self.indices[j]] = j
-        return
-
     def getSumOfDistances(self):
         """
         :return:
@@ -159,9 +146,6 @@ class Contact:
         return sum
 
     def prepareString(self, Unb):
-        if len(self.indices) == 0:
-            self.getIndices()
-            self.getTraj()
         for a in range(1, Unb.cycle):
             # indices gives an error with small fragments
             # self.pdb.readDCD("traj_{0:d}/traj_{0:d}.dcd".format(a), Unb.top, indices=self.indices)
