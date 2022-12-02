@@ -42,6 +42,8 @@ if __name__ == '__main__':
         else:
             print("The is no checkpoint file to report of.")
     elif args.string:
+        if args.auto:
+            raise NotImplementedError
         if os.path.isfile(Unb.checkpoint):
             Unb = Unb.load()
             c = src.cycle.Cycle(Unb)
