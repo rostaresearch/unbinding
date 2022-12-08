@@ -32,7 +32,7 @@ def opt_string(data, order="c", new_nw=None, write=False, plot=False):
     """
 
     :param data: shaped as n_windows, n_frames, n_coordinates
-    :param order: c is for clubic spline fitting, integer is for polynomial
+    :param order: c is for cubic spline fitting, integer is for polynomial
     :param new_nw:
     :param write:
     :param plot:
@@ -42,30 +42,29 @@ def opt_string(data, order="c", new_nw=None, write=False, plot=False):
     avg = np.mean(data, axis=1)
     if plot:
         plot_act_data(data)
-    x = np.arange(1.0, nw+0.1, 0.1)
+    if new_nw is None:
+        new_nw = nw
+    x = np.arange(1.0, new_nw+0.1, 0.1)
     y = np.zeros(shape=x.shape, dtype=np.float_)
     if order == "c":
         p = np.empty(0)
         for i in range(nc):
-            p = np.append(p, CubicSpline(np.arange(1, nw + 1, 1), avg[:, i]))
+            p = np.append(p, CubicSpline(np.linspace(1, new_nw, nw), avg[:, i]))
             y += np.square(p[i](x, 1))
     else:
         p = np.empty(shape=(nc, order+1), dtype=np.float_)
         for i in range(nc):
-            p[i] = np.polyfit(np.arange(1, nw+1, 1), avg[:, i], order)
+            p[i] = np.polyfit(np.linspace(1, new_nw, nw), avg[:, i], order)
             y += np.square(np.polyval(np.polyder(p[i]), x))
     y = np.sqrt(y)
     l = np.trapz(y, x)
     # l = simps(y, x)
-    # change number of windows between strings if needed
-    if new_nw is None:
-        new_nw = nw
     li = np.linspace(0, l, new_nw)
     flen = np.empty(shape=x.shape, dtype=np.float_)
     for i in range(flen.shape[0]):
         flen[i] = np.trapz(y[:i+1], x[:i+1])
-    pt = np.empty(shape=nw, dtype=np.int_)
-    for i in range(nw):
+    pt = np.empty(shape=new_nw, dtype=np.int_)
+    for i in range(new_nw):
         v = np.abs(flen-li[i])
         pt[i] = np.where(v == np.min(v))[0]
     g = np.empty(shape=(nc, x.shape[0]), dtype=np.float_)
@@ -122,9 +121,9 @@ if __name__ == "__main__":
     nw = 25
     data = []
     for i in range(1, nw + 1):
-        data.append(np.genfromtxt("{0:d}/{0:d}_prod1.colvars.traj".format(i))[:, 1:])
+        data.append(np.genfromtxt("{0:d}/{0:d}_prod4.colvars.traj".format(i))[:, 1:])
     data = np.array(data)
-    newconstr = opt_string(data, plot=True)
+    newconstr = opt_string(data, plot=True, write=True)
     with open("string.col", "r") as fin:
         template = ''.join(fin.readlines())
     for i in range(newconstr.shape[0]):         # nw

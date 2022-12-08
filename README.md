@@ -74,7 +74,7 @@ Options:
 |------------------|:---------|------------------:|
 | --trajectory  -t | int      | "last trajectory" |
 | --lig         -l | string   |               LIG |
-| --top            | string   |            "find" |
+| --top            | string   |            "next" |
 | --cutoff      -c | float(Å) |               3.5 |
 | --maxdist     -m | float(Å) |               9.0 |
 | -ns              | int(ns)  |                10 |
@@ -89,7 +89,7 @@ Options:
 | --namd           | string   |              None |
 
 `--trajectory`
-Which trajectory to analyze. Finds the latest `traj_$i` folder unless specified.
+Which trajectory to analyze. Proceeds according to the checkpoint file unless specified.
 
 `--lig` (default=LIG)
 Define the ligand resname, correspond in the resname present in the psf/prmtop/pdb file.
