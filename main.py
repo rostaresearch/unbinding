@@ -9,31 +9,30 @@ import src.output as out
 from src.contact import UnboundException
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', "--trajectory")
-    parser.add_argument('-l', "--lig", default="LIG")
-    parser.add_argument("--top", default="find")
-    parser.add_argument('-c', "--cutoff", default=3.5, type=float, help="Initial cutoff for identifying neighbours in A")
-    parser.add_argument('-m', "--maxdist", default=9, type=float, help="distance for exclusion fo pairs in A")
-    parser.add_argument('-ns', default=10, type=int)
-    parser.add_argument("--cumulative", action='store_true', default=False,
-                        help='Reprocess all the trajectories up to the one specified by "-t". ')
-    parser.add_argument('--writeDCD', action='store_true', default=False, help='write the strided DCD')
-    parser.add_argument('-s', "--stride", default=5, type=int)
-    parser.add_argument('-p', "--processonly", action='store_true', default=False,
-                        help='Do not write VMD and NAMD input. Other outputs will be written.')
-    parser.add_argument("--nosave", action='store_true', default=False,
-                        help='Do not save the checkpoint. For debug only.')
-    parser.add_argument("--report", action='store_true', default=False,
-                        help='Report status and exit.')
-    parser.add_argument("--auto", action='store_true', default=False,
-                        help='Go to the background and restart after namd finished.')
-    parser.add_argument("--namd", help="NAMD submission script, taking <name>.inp as an input and writing to"
-                                       " <name>.out. Use with --auto.")
-    parser.add_argument('--maxiter', default=25, type=int, help="Maximum number of iterations. Use with --auto.")
-    parser.add_argument("--string", action='store_true', default=False)
-    args = parser.parse_args()
+class Arguments:
+    def __init__(self, trajectory=None, lig="LIG", top="find", cutoff=3.5, maxdist=9, ns=10, cumulative=False,
+                 writeDCD=False, stride=5, processonly=False, nosave=False, report=False, auto=False, namd=None,
+                 maxiter=25, string=False):
+        self.trajectory = trajectory
+        self.lig = lig
+        self.top = top
+        self.cutoff = cutoff
+        self.maxdist = maxdist
+        self.ns = ns
+        self.cumulative = cumulative
+        self.writeDCD = writeDCD
+        self.stride = stride
+        self.processonly = processonly
+        self.nosave = nosave
+        self.report = report
+        self.auto = auto
+        self.namd = namd
+        self.maxiter = maxiter
+        self.string = string
+        return
+
+
+def run(args):
     Unb = unb.Unbinding()
     if args.report:
         if os.path.isfile(Unb.checkpoint):
@@ -98,7 +97,8 @@ if __name__ == '__main__':
         c.getClusters(Unb.clusters)
         Unb.history(c)
         c.createContact()
-        out.trackDistances(Unb)
+        if not args.nosave:
+            out.trackDistances(Unb)
         if not args.processonly:
             out.vmdRep(Unb)
             try:
@@ -114,3 +114,31 @@ if __name__ == '__main__':
         Unb.writeOutput(out.cycle(c))
         if not args.nosave:
             Unb.save()
+    return
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', "--trajectory")
+    parser.add_argument('-l', "--lig", default="LIG")
+    parser.add_argument("--top", default="find")
+    parser.add_argument('-c', "--cutoff", default=3.5, type=float, help="Initial cutoff for identifying neighbours in A")
+    parser.add_argument('-m', "--maxdist", default=9, type=float, help="distance for exclusion fo pairs in A")
+    parser.add_argument('-ns', default=10, type=int)
+    parser.add_argument("--cumulative", action='store_true', default=False,
+                        help='Reprocess all the trajectories up to the one specified by "-t". ')
+    parser.add_argument('--writeDCD', action='store_true', default=False, help='write the strided DCD')
+    parser.add_argument('-s', "--stride", default=5, type=int)
+    parser.add_argument('-p', "--processonly", action='store_true', default=False,
+                        help='Do not write VMD and NAMD input. Other outputs will be written.')
+    parser.add_argument("--nosave", action='store_true', default=False,
+                        help='Do not save the checkpoint. For debug only.')
+    parser.add_argument("--report", action='store_true', default=False,
+                        help='Report status and exit.')
+    parser.add_argument("--auto", action='store_true', default=False,
+                        help='Go to the background and restart after namd finished.')
+    parser.add_argument("--namd", help="NAMD submission script, taking <name>.inp as an input and writing to"
+                                       " <name>.out. Use with --auto.")
+    parser.add_argument('--maxiter', default=25, type=int, help="Maximum number of iterations. Use with --auto.")
+    parser.add_argument("--string", action='store_true', default=False)
+    args = parser.parse_args()

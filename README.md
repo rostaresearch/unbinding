@@ -70,23 +70,23 @@ to be included or excluded in the CVs.
     ``` 
 Options:
 
-| Flag             | Argument |           Default |
-|------------------|:---------|------------------:|
-| --trajectory  -t | int      | "last trajectory" |
-| --lig         -l | string   |               LIG |
-| --top            | string   |            "next" |
-| --cutoff      -c | float(Å) |               3.5 |
-| --maxdist     -m | float(Å) |               9.0 |
-| -ns              | int(ns)  |                10 |
-| --cumulative     | Boolean  |             False |
-| --writeDCD       | Boolean  |             False |
-| --stride      -s | int      |                 5 |
-| --processonly -p | Boolean  |             False |
-| --nosave         | Boolean  |             False |
-| --report         | Boolean  |             False |
-| --auto           | Boolean  |             False |
-| --maxiter        | int      |                25 |
-| --namd           | string   |              None |
+| Flag             | Argument | Default |
+|------------------|:---------|--------:|
+| --trajectory  -t | int      |  "next" |
+| --lig         -l | string   |     LIG |
+| --top            | string   |  "find" |
+| --cutoff      -c | float(Å) |     3.5 |
+| --maxdist     -m | float(Å) |     9.0 |
+| -ns              | int(ns)  |      10 |
+| --cumulative     | Boolean  |   False |
+| --writeDCD       | Boolean  |   False |
+| --stride      -s | int      |       5 |
+| --processonly -p | Boolean  |   False |
+| --nosave         | Boolean  |   False |
+| --report         | Boolean  |   False |
+| --auto           | Boolean  |   False |
+| --maxiter        | int      |      25 |
+| --namd           | string   |    None |
 
 `--trajectory`
 Which trajectory to analyze. Proceeds according to the checkpoint file unless specified.
