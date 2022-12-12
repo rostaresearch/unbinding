@@ -142,3 +142,4 @@ if __name__ == '__main__':
     parser.add_argument('--maxiter', default=25, type=int, help="Maximum number of iterations. Use with --auto.")
     parser.add_argument("--string", action='store_true', default=False)
     args = parser.parse_args()
+    run(args)
